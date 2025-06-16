@@ -6,8 +6,10 @@ use App\Models\User;
 use App\Models\Tenant\Tenant;
 use App\Models\Subscription\Plan;
 use App\Models\Subscription\Subscription;
+use App\Models\Status\Status;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use App\Enums\Currency;
 
 class SubscriptionFlowTest extends TestCase
 {
@@ -19,11 +21,26 @@ class SubscriptionFlowTest extends TestCase
         $user = User::factory()->create();
 
         // Create a tenant and attach to user
-        $tenant = Tenant::factory()->create();
+        $tenant = Tenant::create([
+            'slug' => 'test-tenant',
+            'name' => 'Test Tenant',
+            'status_id' => 1,
+            'amount' => 0,
+        ]);
+        
         $tenant->users()->attach($user);
 
         // Create a plan
-        $plan = Plan::factory()->create();
+        $plan = Plan::create([
+            'title' => 'Test Plan',
+            'price' => 10.0,
+            'invoice_period' => 30,
+            'invoice_interval' => 'day',
+            'trial_period' => 0,
+            'trial_interval' => 'day',
+            'currency' => Currency::USD->value,
+            'status_id' => $status->id,
+        ]);
 
         // Subscribe tenant to the plan
         $subscription = Subscription::create([
@@ -38,7 +55,7 @@ class SubscriptionFlowTest extends TestCase
             'trial_period' => $plan->trial_period,
             'trial_interval' => $plan->trial_interval,
             'start_at' => now(),
-            'status_id' => 1, // You may want to use a factory or a constant for this
+            'status_id' => $status->id,
             'created_by' => $user->id,
         ]);
 

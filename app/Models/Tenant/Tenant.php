@@ -2,15 +2,15 @@
 
 namespace App\Models\Tenant;
 
-use App\Models\Concerns\Relationship\HasStatus;
 use App\Models\User;
 use App\Models\Auth\Role;
 use App\Models\Lead\Lead;
-use App\Models\Coupon\Coupon;
 use App\Models\Email\SentEmail;
 use App\Models\Department\Department;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Subscription\Subscription;
+use App\Models\Subscription\Coupon\Coupon;
+use App\Models\Concerns\Relationship\HasStatus;
 use App\Models\EmployeeProfile\EmployeeProfile;
 
 class Tenant extends Model
@@ -33,16 +33,6 @@ class Tenant extends Model
         'is_redirect'
     ];
 
-    public function logo() {
-        return $this->image()->whereType('logo');
-
-    }
-
-    public function icon() {
-        return $this->image()->whereType('icon');
-
-    }
-
     public function users(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
     {
         return $this->belongsToMany(User::class, 'tenant_user', 'tenant_id', 'user_id');
@@ -53,9 +43,15 @@ class Tenant extends Model
 
     }
 
-    public function coupons()
+    public function usedCoupons()
     {
         return $this->belongsToMany(Coupon::class);
+
+    }
+
+    public function allowedCoupons()
+    {
+        return $this->hasMany(Coupon::class);
 
     }
 
@@ -70,20 +66,20 @@ class Tenant extends Model
         return $this->hasMany(Subscription::class);
     }
 
-    public function departments(): \Illuminate\Database\Eloquent\Relations\HasMany
-    {
-        return $this->hasMany(Department::class);
-    }
+    // public function departments(): \Illuminate\Database\Eloquent\Relations\HasMany
+    // {
+    //     return $this->hasMany(Department::class);
+    // }
 
-    public function employeeProfiles(): \Illuminate\Database\Eloquent\Relations\HasMany
-    {
-        return $this->hasMany(EmployeeProfile::class);
-    }
+    // public function employeeProfiles(): \Illuminate\Database\Eloquent\Relations\HasMany
+    // {
+    //     return $this->hasMany(EmployeeProfile::class);
+    // }
 
-    public function leads(): \Illuminate\Database\Eloquent\Relations\HasMany
-    {
-        return $this->hasMany(Lead::class);
-    }
+    // public function leads(): \Illuminate\Database\Eloquent\Relations\HasMany
+    // {
+    //     return $this->hasMany(Lead::class);
+    // }
 
     public function sentEmails(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
@@ -107,27 +103,7 @@ class Tenant extends Model
         ]);
     }
 
-    public function getLogoUrl() {
-        $logo = $this->logo()->first();
-        if ($logo) {
-            return $logo->fullUrl();
-        } else {
-            // return 'https://reachcardapp.s3.ap-southeast-2.amazonaws.com/default-images/logo.png';
-            return  "https://reachcardapp.s3.ap-southeast-2.amazonaws.com/default-images/default_company_logo.png";
-
-        }
-    }
-
-    public function getIconUrl() {
-        $icon = $this->icon()->first();
-        if ($icon) {
-            return $icon->fullUrl();
-        } else {
-            return 'https://reachcardapp.s3.ap-southeast-2.amazonaws.com/default-images/icon.png';
-        }
-    }
-
-    public static function findByDomain($param): Model|\Illuminate\Database\Eloquent\Builder|null
+    public static function findBySlug($param): Model|\Illuminate\Database\Eloquent\Builder|null
     {
         return self::query()->where('slug', $param)->first();
     }
