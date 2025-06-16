@@ -19,17 +19,17 @@ class SubscriptionFlowTest extends TestCase
     {
         // Create a user
         $user = User::factory()->create();
-
+        $status = Status::findByNameAndType("active", "tenant");
         // Create a tenant and attach to user
         $tenant = Tenant::create([
             'slug' => 'test-tenant',
             'name' => 'Test Tenant',
-            'status_id' => 1,
-            'amount' => 0,
+            'status_id' => $status->id
         ]);
-        
+
         $tenant->users()->attach($user);
 
+        $status = Status::findByNameAndType("active", "plan");
         // Create a plan
         $plan = Plan::create([
             'title' => 'Test Plan',
@@ -42,6 +42,7 @@ class SubscriptionFlowTest extends TestCase
             'status_id' => $status->id,
         ]);
 
+        $status = Status::findByNameAndType("active", "subscription");
         // Subscribe tenant to the plan
         $subscription = Subscription::create([
             'tenant_id' => $tenant->id,

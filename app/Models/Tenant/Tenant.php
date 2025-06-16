@@ -23,7 +23,6 @@ class Tenant extends Model
         'slug',
         'name',
         'status_id',
-        'amount',
         'about',
         'email',
         'phone',
