@@ -1,0 +1,171 @@
+<?php
+
+namespace App\Models\Tenant;
+
+use App\Models\Concerns\Relationship\HasStatus;
+use App\Models\User;
+use App\Models\Auth\Role;
+use App\Models\Lead\Lead;
+use App\Models\Coupon\Coupon;
+use App\Models\Email\SentEmail;
+use App\Models\Department\Department;
+use Illuminate\Database\Eloquent\Model;
+use App\Models\Subscription\Subscription;
+use App\Models\EmployeeProfile\EmployeeProfile;
+
+class Tenant extends Model
+{
+    use HasStatus;
+
+    protected $hidden = ['pivot'];
+
+    protected $fillable = [
+        'slug',
+        'name',
+        'status_id',
+        'amount',
+        'about',
+        'email',
+        'phone',
+        'website',
+        'location',
+        'is_default',
+        'is_redirect'
+    ];
+
+    public function logo() {
+        return $this->image()->whereType('logo');
+
+    }
+
+    public function icon() {
+        return $this->image()->whereType('icon');
+
+    }
+
+    public function users(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'tenant_user', 'tenant_id', 'user_id');
+    }
+
+    public function roles(): \Illuminate\Database\Eloquent\Relations\HasMany {
+        return $this->hasMany(Role::class);
+
+    }
+
+    public function coupons()
+    {
+        return $this->belongsToMany(Coupon::class);
+
+    }
+
+    public function subscription()
+    {
+        return $this->subscriptions()->toHasOne();
+    }
+
+
+    public function subscriptions(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Subscription::class);
+    }
+
+    public function departments(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Department::class);
+    }
+
+    public function employeeProfiles(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(EmployeeProfile::class);
+    }
+
+    public function leads(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Lead::class);
+    }
+
+    public function sentEmails(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(SentEmail::class);
+    }
+
+    public function seedRoles() {
+        $this->roles()->insert([
+            [
+                'name' => 'manager',
+                'label' => 'Manager',
+                'tenant_id' => $this->id,
+                'created_by' => null //This should be null for indicating default
+            ],
+            [
+                'name' => 'employee',
+                'label' => 'Employee',
+                'tenant_id' => $this->id,
+                'created_by' => null //This should be null for indicating default
+            ],
+        ]);
+    }
+
+    public function getLogoUrl() {
+        $logo = $this->logo()->first();
+        if ($logo) {
+            return $logo->fullUrl();
+        } else {
+            // return 'https://reachcardapp.s3.ap-southeast-2.amazonaws.com/default-images/logo.png';
+            return  "https://reachcardapp.s3.ap-southeast-2.amazonaws.com/default-images/default_company_logo.png";
+
+        }
+    }
+
+    public function getIconUrl() {
+        $icon = $this->icon()->first();
+        if ($icon) {
+            return $icon->fullUrl();
+        } else {
+            return 'https://reachcardapp.s3.ap-southeast-2.amazonaws.com/default-images/icon.png';
+        }
+    }
+
+    public static function findByDomain($param): Model|\Illuminate\Database\Eloquent\Builder|null
+    {
+        return self::query()->where('slug', $param)->first();
+    }
+
+    // Handling tenant instance
+
+    public function makeCurrent(): self
+    {
+        if (optional(static::getCurrent())->id === $this->id) {
+            return $this;
+        }
+
+        static::forgetCurrent();
+        app()->instance('currentTenant', $this);
+
+        return $this;
+    }
+
+    public static function getCurrent()
+    {
+        if (!app()->has('currentTenant')) {
+            return null;
+        }
+
+        return app('currentTenant');
+    }
+
+    public static function forgetCurrent()
+    {
+        $currentTenant = static::getCurrent();
+
+        if (is_null($currentTenant)) {
+            return null;
+        }
+
+        app()->forgetInstance('currentTenant');
+
+        return $currentTenant;
+    }
+
+}
