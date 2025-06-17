@@ -15,11 +15,18 @@ class SubscriptionFlowTest extends TestCase
 {
     use RefreshDatabase;
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->seed(); // or $this->seed(StatusSeeder::class);
+    }
+
     public function test_user_can_subscribe_to_plan()
     {
         // Create a user
         $user = User::factory()->create();
         $status = Status::findByNameAndType("active", "tenant");
+
         // Create a tenant and attach to user
         $tenant = Tenant::create([
             'slug' => 'test-tenant',

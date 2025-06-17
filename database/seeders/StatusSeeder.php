@@ -44,6 +44,17 @@ class StatusSeeder extends Seeder
                 'type' => 'tenant',
                 'class' => 'info'
             ],
+            // Plan
+            [
+                'name' => 'active',
+                'type' => 'plan',
+                'class' => 'success'
+            ],
+            [
+                'name' => 'inactive',
+                'type' => 'plan',
+                'class' => 'warning'
+            ],
             // Subscription module
             [
                 'name' => 'active',
