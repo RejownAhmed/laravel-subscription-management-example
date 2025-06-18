@@ -148,7 +148,7 @@ class SubscriptionController extends Controller
 
             DB::commit();
 
-            return success_response("Subscription renewed Successfully!", [
+            return success_response("Subscription is updated Successfully!", [
                 "subscription" => $subscription
 
             ], 200);
@@ -158,9 +158,19 @@ class SubscriptionController extends Controller
             // Keep the error log
             Log::error($e);
             // Return error message to client
-            return error_response("Failed to renew subscription!", 500);
+            return error_response("Failed to update the subscription!", 500);
 
         }
+
+    }
+
+    // Cancel current subscription
+    public function cancel(Request $request)
+    {
+        // Cancel the subscription
+        $this->service->cancelCurrentSubscription();
+
+        return success_response("Subscription is cancelled Successfully!", 200);
 
     }
 
