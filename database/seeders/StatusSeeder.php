@@ -28,7 +28,8 @@ class StatusSeeder extends Seeder
                 'name' => 'invited',
                 'type' => 'user',
                 'class' => 'purple'
-            ], [
+            ],
+            [
                 'name' => 'rejected',
                 'type' => 'user',
                 'class' => 'danger'
@@ -40,7 +41,7 @@ class StatusSeeder extends Seeder
                 'class' => 'success'
             ],
             [
-                'name' => 'expired',
+                'name' => 'inactive',
                 'type' => 'tenant',
                 'class' => 'info'
             ],
@@ -54,32 +55,6 @@ class StatusSeeder extends Seeder
                 'name' => 'inactive',
                 'type' => 'plan',
                 'class' => 'warning'
-            ],
-            // Subscription module
-            [
-                'name' => 'active',
-                'type' => 'subscription',
-                'class' => 'success'
-            ],
-            [
-                'name' => 'inactive',
-                'type' => 'subscription',
-                'class' => 'warning'
-            ],
-            [
-                'name' => 'closed',
-                'type' => 'subscription',
-                'class' => 'info'
-            ],
-            [
-                'name' => 'expired',
-                'type' => 'subscription',
-                'class' => 'danger'
-            ],
-            [
-                'name' => 'trial_expired',
-                'type' => 'subscription',
-                'class' => 'danger'
             ],
         ];
 

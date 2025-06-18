@@ -2,26 +2,26 @@
 
 namespace App\Models\Tenant;
 
+use App\Models\Concerns\Subscription\HasSubscription;
 use App\Models\User;
 use App\Models\Auth\Role;
 use App\Models\Lead\Lead;
 use App\Models\Email\SentEmail;
 use App\Models\Department\Department;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Subscription\Subscription;
-use App\Models\Subscription\Coupon\Coupon;
 use App\Models\Concerns\Relationship\HasStatus;
 use App\Models\EmployeeProfile\EmployeeProfile;
 
 class Tenant extends Model
 {
-    use HasStatus;
+    use HasStatus, HasSubscription;
 
     protected $hidden = ['pivot'];
 
     protected $fillable = [
         'slug',
         'name',
+        'amount',
         'status_id',
         'about',
         'email',
@@ -40,29 +40,6 @@ class Tenant extends Model
     public function roles(): \Illuminate\Database\Eloquent\Relations\HasMany {
         return $this->hasMany(Role::class);
 
-    }
-
-    public function usedCoupons()
-    {
-        return $this->belongsToMany(Coupon::class);
-
-    }
-
-    public function allowedCoupons()
-    {
-        return $this->hasMany(Coupon::class);
-
-    }
-
-    public function subscription()
-    {
-        return $this->subscriptions()->toHasOne();
-    }
-
-
-    public function subscriptions(): \Illuminate\Database\Eloquent\Relations\HasMany
-    {
-        return $this->hasMany(Subscription::class);
     }
 
     // public function departments(): \Illuminate\Database\Eloquent\Relations\HasMany

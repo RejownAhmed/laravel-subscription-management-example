@@ -23,6 +23,8 @@ class Subscription extends TenantBaseModel
         'trial_period',
         'trial_interval',
         'start_at',
+        'ended_at',
+        'cancelled_at',
         'plan_id',
         'currency',
         'tenant_id',
@@ -35,27 +37,35 @@ class Subscription extends TenantBaseModel
 
     ];
 
-    // Trial Related
+    // Is Cancelled
+    public function isCancelled() {
+        return !!$this->cancelled_at;
+
+    }
+
+    // Is Cancelled
+    public function isEnded() {
+        return !!$this->ended_at;
+
+    }
+    // Trial End date
     public function trialEndDate() {
         $method = 'add' . ucfirst($this->trial_interval) . 's';
         $this->end = $this->start_at->{$method}($this->period);
 
     }
 
-    public function isTrialOver() {
-        return $this->trialEndDate()->isPast();
-
-    }
-
-    // Invoice Related
-    public function endDate() {
+    // Invoice End date
+    public function invoiceEndDate() {
         $method = 'add' . ucfirst($this->trial_interval) . 's';
         $this->end = $this->start_at->{$method}($this->period);
 
     }
 
-    public function shouldRenew() {
-        return $this->endDate()->isPast();
+    // Is renewable
+    public function canBeRenewed() {
+        // If the subscription has ended or cancelled and the subscribed plan is active
+        return (!!$this->ended_at || !!$this->cancelled_at);
 
     }
 

@@ -2,8 +2,8 @@
 
 namespace App\Models\Subscription\Concerns;
 
+use App\Models\Subscription\Tax;
 use App\Enums\Subscription\TaxType;
-use App\Models\Subscription\Tax\Tax;
 
 trait HasTax
 {
@@ -11,6 +11,7 @@ trait HasTax
         return !!$this->tax_id;
 
     }
+    
     public function taxAmount() {
         if(!$this->hasTax()) return 0;
 
@@ -25,6 +26,7 @@ trait HasTax
         return $amount;
 
     }
+
     public function totalPriceWithTax() {
         return $this->price + $this->taxAmount();
 

@@ -47,12 +47,10 @@ return new class extends Migration
             $table->foreignIdFor(Tenant::class)
                 ->constrained()
                 ->cascadeOnDelete();
-            $table->foreignIdFor(Status::class)
-                ->constrained();
             $table->foreignId('created_by')
                 ->nullable()
                 ->constrained('users', 'id')
-                ->nullOnDelete();
+                ->nullOnDelete(); // For reference
 
             $table->timestamps();
         });

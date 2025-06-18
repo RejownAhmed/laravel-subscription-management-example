@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('slug')->unique();
             $table->string('name');
+            $table->string('amount');
             $table->foreignId('status_id')->constrained('statuses');
             $table->text('about')->nullable();
             $table->string('email')->nullable();

@@ -37,7 +37,7 @@ class Plan extends Model
     protected $casts = [
         "currency" => Currency::class,
     ];
-    
+
     // Active plans
     public function scopeActive($query)
     {
@@ -45,6 +45,7 @@ class Plan extends Model
 
         return $query->where("status_id", $statusActive->id);
     }
+    
     public function isActive(): bool
     {
         $statusActive = Status::findByNameAndType("active", "plan");
